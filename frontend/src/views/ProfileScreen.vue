@@ -79,6 +79,11 @@ const currentSportColor = computed(() => {
   return getSportColor(selectedSport.value)
 })
 
+const getSportEmoji = (sport) => {
+  const found = sportsList.find(s => s.name === sport)
+  return found ? found.icon : '🏃'
+}
+
 const handleRate = (stars) => {
   if (!props.isCurrentUser) return
   sportRatings.value[selectedSport.value] = stars
@@ -97,6 +102,71 @@ const handleLogout = () => {
 
 const handleSettingsInfo = (msg) => {
   emit('toast-message', msg)
+}
+
+// Share profile link to clipboard
+const handleShareProfile = () => {
+  const userId = currentUser.value.id || 'guest'
+  const shareUrl = `${window.location.origin}/?tab=profile&user=${userId}`
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        emit('toast-message', 'Profile share link copied to clipboard! 📋')
+      })
+      .catch(() => {
+        emit('toast-message', `Share Link: ${shareUrl} 🔗`)
+      })
+  } else {
+    emit('toast-message', `Share Link: ${shareUrl} 🔗`)
+  }
+}
+
+// Edit Profile Modal States
+const showEditModal = ref(false)
+const isSavingProfile = ref(false)
+
+const editName = ref('')
+const editBio = ref('')
+const editSport = ref('')
+const editSkill = ref('')
+const editGender = ref('')
+
+const openEditModal = () => {
+  editName.value = currentUser.value.name || ''
+  editBio.value = currentUser.value.bio || ''
+  editSport.value = currentUser.value.primary_sport || 'Football'
+  editSkill.value = currentUser.value.skill_tier || 'Intermediate'
+  editGender.value = currentUser.value.gender || 'male'
+  showEditModal.value = true
+}
+
+const saveProfileDetails = async () => {
+  if (!editName.value.trim()) {
+    emit('toast-message', 'Name cannot be empty! ❌')
+    return
+  }
+  
+  try {
+    isSavingProfile.value = true
+    emit('toast-message', 'Updating profile details... ⏳')
+    
+    await store.updateProfile(
+      editName.value.trim(),
+      editGender.value,
+      null, // keep current avatar
+      editBio.value.trim(),
+      editSport.value,
+      editSkill.value
+    )
+    
+    emit('toast-message', 'Profile details updated successfully! 🎉')
+    showEditModal.value = false
+  } catch (error) {
+    emit('toast-message', `Update failed: ${error.message} ❌`)
+  } finally {
+    isSavingProfile.value = false
+  }
 }
 
 // Supabase Avatar Upload
@@ -184,12 +254,23 @@ const onFileSelected = async (event) => {
       <h3 class="card-name">{{ currentUser.name }}</h3>
       <span class="card-level" :style="{ color: currentSportColor }">LEVEL 18</span>
 
+      <p class="card-bio">{{ currentUser.bio || 'No bio written yet. Tap Edit Profile to add one!' }}</p>
+
+      <div class="profile-badges" v-if="currentUser.primary_sport || currentUser.skill_tier">
+        <span class="profile-badge sport" v-if="currentUser.primary_sport" :style="{ backgroundColor: getSportColor(currentUser.primary_sport) + '20', color: getSportColor(currentUser.primary_sport) }">
+          {{ getSportEmoji(currentUser.primary_sport) }} {{ currentUser.primary_sport }}
+        </span>
+        <span class="profile-badge skill" v-if="currentUser.skill_tier">
+          🏆 {{ currentUser.skill_tier }}
+        </span>
+      </div>
+
       <!-- Action tags -->
       <div class="action-badges-row">
-        <button class="badge-btn" @click="handleSettingsInfo('Profile details shared! 🔗')">
+        <button class="badge-btn" @click="handleShareProfile">
           📤 Share Profile
         </button>
-        <button v-if="isCurrentUser" class="badge-btn edit" @click="handleSettingsInfo('Edit profile details coming soon! 📝')">
+        <button v-if="isCurrentUser" class="badge-btn edit" @click="openEditModal">
           ✏️ Edit Profile
         </button>
       </div>
@@ -371,6 +452,85 @@ const onFileSelected = async (event) => {
           <span class="menu-subtitle">Exit application cleanly</span>
         </div>
         <span class="chevron">➔</span>
+      </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div v-if="showEditModal" class="modal-backdrop" @click="showEditModal = false">
+      <div class="modal-sheet animate-slide-up" @click.stop>
+        <div class="modal-header">
+          <h2 class="modal-title">Edit Profile</h2>
+          <button class="close-btn" @click="showEditModal = false">✕</button>
+        </div>
+
+        <div class="modal-body scrollable-y">
+          <!-- Name -->
+          <div class="input-group">
+            <label class="input-label">Display Name</label>
+            <input 
+              v-model="editName"
+              type="text" 
+              placeholder="e.g. Champ"
+              class="form-input"
+            />
+          </div>
+
+          <!-- Bio -->
+          <div class="input-group">
+            <label class="input-label">Bio (Tell others about yourself)</label>
+            <textarea 
+              v-model="editBio"
+              placeholder="e.g. Football enthusiast. Always down for a friendly match."
+              class="form-textarea"
+              rows="3"
+              maxlength="500"
+            ></textarea>
+          </div>
+
+          <!-- Primary Sport -->
+          <div class="input-group">
+            <label class="input-label">Primary Sport</label>
+            <div class="sport-select-grid">
+              <button 
+                v-for="sport in sportsList" 
+                :key="sport.name"
+                type="button"
+                class="sport-chip"
+                :class="{ active: editSport === sport.name }"
+                :style="editSport === sport.name ? { backgroundColor: getSportColor(sport.name), borderColor: getSportColor(sport.name), color: '#ffffff' } : {}"
+                @click="editSport = sport.name"
+              >
+                <span class="chip-emoji">{{ sport.icon }}</span> {{ sport.name }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Gender & Skill Level in a row -->
+          <div class="form-row">
+            <div class="input-group half">
+              <label class="input-label">Gender</label>
+              <select v-model="editGender" class="form-select">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="input-group half">
+              <label class="input-label">Skill Tier</label>
+              <select v-model="editSkill" class="form-select">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Professional">Professional</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button class="submit-btn" :disabled="isSavingProfile" @click="saveProfileDetails">
+            <span v-if="isSavingProfile" class="loader"></span>
+            <span v-else>Save Changes</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -898,5 +1058,196 @@ input:checked + .toggle-slider:before {
 .chevron {
   font-size: 0.82rem;
   color: var(--outline-variant);
+}
+
+/* Card bio & badges */
+.card-bio {
+  font-size: 0.88rem;
+  color: var(--on-surface-variant);
+  text-align: center;
+  margin: 8px 16px 12px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.profile-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.profile-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background-color: var(--surface-dim);
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline-variant);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Modal styles (matching CreateMatchModal layout) */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-height: 85%;
+  background-color: var(--surface);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .modal-sheet {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    max-height: 80vh;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--outline);
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  margin-bottom: 8px;
+  padding-left: 2px;
+  text-align: left;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--on-surface);
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary);
+}
+
+.form-textarea {
+  resize: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row .half {
+  flex: 1;
+}
+
+.sport-select-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.submit-btn {
+  width: 100%;
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  filter: brightness(1.1);
+}
+
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--on-primary);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 </style>

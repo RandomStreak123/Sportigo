@@ -16,13 +16,14 @@ const skills = ['Beginner', 'Intermediate', 'Advanced', 'Professional']
 
 const selectedSport = ref('Football')
 const title = ref('')
-const dateTime = ref(() => {
+const getDefaultDateTime = () => {
   // Setup standard date string format: yyyy-MM-ddThh:mm
   const date = new Date(Date.now() + 2 * 60 * 60 * 1000)
   date.setMinutes(0)
   const tzOffset = date.getTimezoneOffset() * 60000
   return new Date(date - tzOffset).toISOString().slice(0, 16)
-})
+}
+const dateTime = ref(getDefaultDateTime())
 const location = ref('')
 const slots = ref('')
 const selectedSkill = ref('Intermediate')
@@ -86,6 +87,7 @@ const submitForm = async () => {
 const closeModal = () => {
   // Reset values
   title.value = ''
+  dateTime.value = getDefaultDateTime()
   location.value = ''
   slots.value = ''
   selectedSport.value = 'Football'

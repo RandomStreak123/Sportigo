@@ -54,12 +54,12 @@ const triggerSnackbar = (message) => {
 const snackbarIcon = computed(() => {
   const text = snackbarText.value.toLowerCase()
   if (text.includes('coming soon')) return '⏳'
-  if (text.includes('welcome')) return '👋'
+  if (text.includes('welcome') || text.includes('morning') || text.includes('afternoon') || text.includes('evening')) return '👋'
   if (text.includes('rated') || text.includes('star')) return '⭐'
   if (text.includes('filtered') || text.includes('search')) return '🔍'
   if (text.includes('share') || text.includes('shared')) return '🔗'
   if (text.includes('sign') || text.includes('exit') || text.includes('out')) return '🚪'
-  if (text.includes('success') || text.includes('welcome')) return '✅'
+  if (text.includes('success')) return '✅'
   return '🔔'
 })
 
@@ -91,7 +91,12 @@ const viewUserProfile = (player) => {
 }
 
 const handleAuthSuccess = () => {
-  triggerSnackbar('Welcome to PlayConnect! 👋')
+  const hour = new Date().getHours()
+  let greet = 'Good evening'
+  if (hour < 12) greet = 'Good morning'
+  else if (hour < 17) greet = 'Good afternoon'
+  
+  triggerSnackbar(`${greet}, ${currentUser.value.name}! 👋`)
   switchTab('home')
 }
 

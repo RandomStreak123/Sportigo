@@ -92,6 +92,21 @@ class User extends Authenticatable
 
     public function setAvatarAttribute($value)
     {
+        $this->attributes['avatar'] = $value;
+        $this->attributes['profile_picture'] = $value;
+        $this->attributes['profile_photo'] = $value;
+    }
+
+    public function setProfilePictureAttribute($value)
+    {
+        $this->attributes['avatar'] = $value;
+        $this->attributes['profile_picture'] = $value;
+        $this->attributes['profile_photo'] = $value;
+    }
+
+    public function setProfilePhotoAttribute($value)
+    {
+        $this->attributes['avatar'] = $value;
         $this->attributes['profile_picture'] = $value;
         $this->attributes['profile_photo'] = $value;
     }

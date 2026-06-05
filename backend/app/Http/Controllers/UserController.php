@@ -22,6 +22,8 @@ class UserController extends Controller
             'skill_tier' => 'nullable|string|max:64',
             'gender' => 'nullable|string|in:male,female',
             'avatar' => 'nullable|string|max:120000',
+            'profile_picture' => 'nullable|string|max:120000',
+            'profile_photo' => 'nullable|string|max:120000',
         ]);
 
         $user = $request->user();

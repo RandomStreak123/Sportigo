@@ -79,6 +79,22 @@ const currentSportColor = computed(() => {
   return getSportColor(selectedSport.value)
 })
 
+const getSportGradient = (sport) => {
+  switch (sport) {
+    case 'Football': return 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%)'
+    case 'Cricket': return 'linear-gradient(135deg, #0d47a1 0%, #1976d2 50%, #64b5f6 100%)'
+    case 'Basketball': return 'linear-gradient(135deg, #e65100 0%, #f57c00 50%, #ffb74d 100%)'
+    case 'Tennis': return 'linear-gradient(135deg, #33691e 0%, #558b2f 50%, #9ccc65 100%)'
+    case 'Padel': return 'linear-gradient(135deg, #004d40 0%, #00796b 50%, #4db6ac 100%)'
+    case 'Badminton': return 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 50%, #ba68c8 100%)'
+    default: return 'linear-gradient(135deg, #1a237e 0%, #303f9f 50%, #7986cb 100%)'
+  }
+}
+
+const currentSportGradient = computed(() => {
+  return getSportGradient(currentUser.value.primary_sport || selectedSport.value)
+})
+
 const getSportEmoji = (sport) => {
   const found = sportsList.find(s => s.name === sport)
   return found ? found.icon : '🏃'
@@ -236,6 +252,7 @@ const onFileSelected = async (event) => {
 
     <!-- Profile Info Card -->
     <div class="profile-card">
+      <div class="card-banner" :style="{ background: currentSportGradient }"></div>
       <div class="avatar-wrap">
         <img :src="avatarUrl" class="card-avatar" @error="(e) => e.target.src = '/assets/images/players/download.jpg'" />
         <button v-if="isCurrentUser" class="camera-btn" @click="fileInput.click()" :disabled="isUploading">
@@ -567,17 +584,31 @@ const onFileSelected = async (event) => {
   background-color: var(--surface);
   border: 1px solid var(--outline-variant);
   border-radius: var(--radius-lg);
-  padding: 24px 16px;
+  padding: 0 16px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-shadow: var(--shadow-sm);
   margin-bottom: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-banner {
+  width: 100%;
+  height: 96px;
+  margin-left: -16px;
+  margin-right: -16px;
+  width: calc(100% + 32px);
+  margin-bottom: 16px;
+  transition: background 0.6s ease;
 }
 
 .avatar-wrap {
   position: relative;
-  margin-bottom: 16px;
+  margin-top: -64px;
+  margin-bottom: 12px;
+  z-index: 2;
 }
 
 .card-avatar {
@@ -585,7 +616,7 @@ const onFileSelected = async (event) => {
   height: 88px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ffffff;
+  border: 4px solid var(--surface);
   box-shadow: var(--shadow-md);
 }
 

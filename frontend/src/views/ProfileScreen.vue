@@ -473,83 +473,85 @@ const onFileSelected = async (event) => {
     </div>
 
     <!-- Edit Profile Modal -->
-    <div v-if="showEditModal" class="modal-backdrop" @click="showEditModal = false">
-      <div class="modal-sheet animate-slide-up" @click.stop>
-        <div class="modal-header">
-          <h2 class="modal-title">Edit Profile</h2>
-          <button class="close-btn" @click="showEditModal = false">✕</button>
-        </div>
-
-        <div class="modal-body scrollable-y">
-          <!-- Name -->
-          <div class="input-group">
-            <label class="input-label">Display Name</label>
-            <input 
-              v-model="editName"
-              type="text" 
-              placeholder="e.g. Champ"
-              class="form-input"
-            />
+    <Teleport to="body">
+      <div v-if="showEditModal" class="modal-backdrop" @click="showEditModal = false">
+        <div class="modal-sheet animate-slide-up" @click.stop>
+          <div class="modal-header">
+            <h2 class="modal-title">Edit Profile</h2>
+            <button class="close-btn" @click="showEditModal = false">✕</button>
           </div>
 
-          <!-- Bio -->
-          <div class="input-group">
-            <label class="input-label">Bio (Tell others about yourself)</label>
-            <textarea 
-              v-model="editBio"
-              placeholder="e.g. Football enthusiast. Always down for a friendly match."
-              class="form-textarea"
-              rows="3"
-              maxlength="500"
-            ></textarea>
-          </div>
-
-          <!-- Primary Sport -->
-          <div class="input-group">
-            <label class="input-label">Primary Sport</label>
-            <div class="sport-select-grid">
-              <button 
-                v-for="sport in sportsList" 
-                :key="sport.name"
-                type="button"
-                class="sport-chip"
-                :class="{ active: editSport === sport.name }"
-                :style="editSport === sport.name ? { backgroundColor: getSportColor(sport.name), borderColor: getSportColor(sport.name), color: '#ffffff' } : {}"
-                @click="editSport = sport.name"
-              >
-                <span class="chip-emoji">{{ sport.icon }}</span> {{ sport.name }}
-              </button>
+          <div class="modal-body scrollable-y">
+            <!-- Name -->
+            <div class="input-group">
+              <label class="input-label">Display Name</label>
+              <input 
+                v-model="editName"
+                type="text" 
+                placeholder="e.g. Champ"
+                class="form-input"
+              />
             </div>
-          </div>
 
-          <!-- Gender & Skill Level in a row -->
-          <div class="form-row">
-            <div class="input-group half">
-              <label class="input-label">Gender</label>
-              <select v-model="editGender" class="form-select">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
+            <!-- Bio -->
+            <div class="input-group">
+              <label class="input-label">Bio (Tell others about yourself)</label>
+              <textarea 
+                v-model="editBio"
+                placeholder="e.g. Football enthusiast. Always down for a friendly match."
+                class="form-textarea"
+                rows="3"
+                maxlength="500"
+              ></textarea>
             </div>
-            <div class="input-group half">
-              <label class="input-label">Skill Tier</label>
-              <select v-model="editSkill" class="form-select">
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-                <option value="Professional">Professional</option>
-              </select>
-            </div>
-          </div>
 
-          <!-- Submit Button -->
-          <button class="submit-btn" :disabled="isSavingProfile" @click="saveProfileDetails">
-            <span v-if="isSavingProfile" class="loader"></span>
-            <span v-else>Save Changes</span>
-          </button>
+            <!-- Primary Sport -->
+            <div class="input-group">
+              <label class="input-label">Primary Sport</label>
+              <div class="sport-select-grid">
+                <button 
+                  v-for="sport in sportsList" 
+                  :key="sport.name"
+                  type="button"
+                  class="sport-chip"
+                  :class="{ active: editSport === sport.name }"
+                  :style="editSport === sport.name ? { backgroundColor: getSportColor(sport.name), borderColor: getSportColor(sport.name), color: '#ffffff' } : {}"
+                  @click="editSport = sport.name"
+                >
+                  <span class="chip-emoji">{{ sport.icon }}</span> {{ sport.name }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Gender & Skill Level in a row -->
+            <div class="form-row">
+              <div class="input-group half">
+                <label class="input-label">Gender</label>
+                <select v-model="editGender" class="form-select">
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+              <div class="input-group half">
+                <label class="input-label">Skill Tier</label>
+                <select v-model="editSkill" class="form-select">
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                  <option value="Professional">Professional</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button class="submit-btn" :disabled="isSavingProfile" @click="saveProfileDetails">
+              <span v-if="isSavingProfile" class="loader"></span>
+              <span v-else>Save Changes</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 

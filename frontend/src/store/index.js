@@ -57,12 +57,17 @@ const init = async () => {
   try {
     const headers = getAuthHeaders()
 
-    // Fetch matches and activities in parallel, skip notifications (not implemented)
-    const [matchesData, activitiesData] = await Promise.all([
+    // Fetch user details, matches, and activities in parallel
+    const [userData, matchesData, activitiesData] = await Promise.all([
+      safeFetch(`${API_URL}/user`, { headers }),
       safeFetch(`${API_URL}/matches`, { headers }),
       safeFetch(`${API_URL}/activities`, { headers })
     ])
 
+    if (userData) {
+      state.currentUser = userData
+      localStorage.setItem('sportigo_user', JSON.stringify(userData))
+    }
     if (Array.isArray(matchesData)) {
       state.matches = matchesData
     }

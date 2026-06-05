@@ -52,6 +52,9 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Revoke all existing tokens to prevent simultaneous logins
+        $user->tokens()->delete();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

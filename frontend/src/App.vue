@@ -22,6 +22,7 @@ import NotificationsModal from './components/NotificationsModal.vue'
 
 // Bottom/Sidebar Tab Navigation State
 const currentTab = ref('home') // 'home', 'explore', 'matches', 'activity', 'profile'
+const profileTargetUser = ref(null)
 
 // Modal States
 const showPlayerCard = ref(false)
@@ -76,8 +77,17 @@ const currentUserAvatar = computed(() => {
 })
 
 const switchTab = (tabName) => {
+  if (tabName === 'profile') {
+    profileTargetUser.value = null
+  }
   currentTab.value = tabName
   store.init() // Silently refresh matches, feeds, and profiles
+}
+
+const viewUserProfile = (player) => {
+  profileTargetUser.value = player
+  currentTab.value = 'profile'
+  store.init()
 }
 
 const handleAuthSuccess = () => {
@@ -258,7 +268,9 @@ const isWomenTheme = computed(() => {
             />
             <ProfileScreen 
               v-else-if="currentTab === 'profile'"
-              :is-current-user="true"
+              :is-current-user="!profileTargetUser"
+              :player-name="profileTargetUser ? profileTargetUser.name : ''"
+              :profile-picture="profileTargetUser ? (profileTargetUser.profilePicture || profileTargetUser.profilePhotoUrl || profileTargetUser.avatar) : null"
               @auth-logout="triggerSnackbar('Successfully signed out.')"
               @toast-message="triggerSnackbar"
             />
@@ -335,7 +347,7 @@ const isWomenTheme = computed(() => {
       @close="showPlayerCard = false"
       @wave-success="triggerSnackbar"
       @view-profile="(p) => { 
-        triggerSnackbar(`Viewing profile of ${p.name}`);
+        viewUserProfile(p);
       }"
     />
 

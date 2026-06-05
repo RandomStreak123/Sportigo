@@ -32,6 +32,38 @@ const womenOnly = ref(false)
 const formError = ref('')
 const isSubmitting = ref(false)
 
+// Autocomplete Location suggestions logic
+const locationSuggestions = [
+  'Sportego Arena, Sector 3',
+  'Kick Off Football Turf, Madhapur',
+  'Jubilee Hills Padel Court',
+  'Olimpia Sports Club, Gachibowli',
+  'The Smash Court Badminton, Kondapur',
+  'Municipal Cricket Ground, Hyderabad',
+  'East Hill Tennis Club',
+  'Downtown Padel Club'
+]
+
+const showSuggestions = ref(false)
+const filteredSuggestions = computed(() => {
+  if (!location.value) {
+    return locationSuggestions
+  }
+  const query = location.value.toLowerCase().trim()
+  return locationSuggestions.filter(item => item.toLowerCase().includes(query))
+})
+
+const selectSuggestion = (suggestion) => {
+  location.value = suggestion
+  showSuggestions.value = false
+}
+
+const hideSuggestionsWithDelay = () => {
+  setTimeout(() => {
+    showSuggestions.value = false
+  }, 200)
+}
+
 const showWomenOnlyToggle = computed(() => {
   return store.state.currentUser?.gender === 'female'
 })
@@ -150,14 +182,27 @@ const closeModal = () => {
         </div>
 
         <!-- Location -->
-        <div class="input-group">
+        <div class="input-group location-group">
           <label class="input-label">Location</label>
           <input 
             v-model="location"
             type="text" 
             placeholder="e.g. Central Park Court 2"
             class="form-input"
+            @focus="showSuggestions = true"
+            @blur="hideSuggestionsWithDelay"
           />
+          <!-- Suggestions Dropdown -->
+          <ul v-if="showSuggestions && filteredSuggestions.length" class="suggestions-list">
+            <li 
+              v-for="suggestion in filteredSuggestions" 
+              :key="suggestion"
+              class="suggestion-item"
+              @mousedown="selectSuggestion(suggestion)"
+            >
+              📍 {{ suggestion }}
+            </li>
+          </ul>
         </div>
 
         <!-- Row slots and skill -->
@@ -466,5 +511,41 @@ input:checked + .toggle-slider:before {
 @keyframes rotation {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Location suggestions dropdown */
+.location-group {
+  position: relative;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: calc(100% - 10px);
+  left: 0;
+  width: 100%;
+  background-color: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.suggestion-item {
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background-color: var(--surface-dim);
+  color: var(--primary);
 }
 </style>

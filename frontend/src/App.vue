@@ -268,7 +268,7 @@ const isWomenTheme = computed(() => {
             />
             <ProfileScreen 
               v-else-if="currentTab === 'profile'"
-              :is-current-user="!profileTargetUser"
+              :is-current-user="!profileTargetUser || profileTargetUser.id === currentUser.id"
               :player-name="profileTargetUser ? profileTargetUser.name : ''"
               :profile-picture="profileTargetUser ? (profileTargetUser.profilePicture || profileTargetUser.profilePhotoUrl || profileTargetUser.avatar) : null"
               @auth-logout="triggerSnackbar('Successfully signed out.')"

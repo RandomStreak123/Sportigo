@@ -75,9 +75,14 @@ const currentUserAvatar = computed(() => {
   return getPlayerAvatar(currentUser.value.profilePhotoUrl, currentUser.value.gender)
 })
 
+const switchTab = (tabName) => {
+  currentTab.value = tabName
+  store.init() // Silently refresh matches, feeds, and profiles
+}
+
 const handleAuthSuccess = () => {
   triggerSnackbar('Welcome to PlayConnect! 👋')
-  currentTab.value = 'home'
+  switchTab('home')
 }
 
 // Modal actions
@@ -156,7 +161,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="sidebar-link" 
             :class="{ active: currentTab === 'home' }"
-            @click="currentTab = 'home'"
+            @click="switchTab('home')"
           >
             <span class="link-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -167,7 +172,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="sidebar-link" 
             :class="{ active: currentTab === 'explore' }"
-            @click="currentTab = 'explore'"
+            @click="switchTab('explore')"
           >
             <span class="link-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
@@ -178,7 +183,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="sidebar-link" 
             :class="{ active: currentTab === 'matches' }"
-            @click="currentTab = 'matches'"
+            @click="switchTab('matches')"
           >
             <span class="link-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"/><path d="M12 2a6 6 0 0 1 6 6v3.5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8a6 6 0 0 1 6-6z"/></svg>
@@ -189,7 +194,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="sidebar-link" 
             :class="{ active: currentTab === 'activity' }"
-            @click="currentTab = 'activity'"
+            @click="switchTab('activity')"
           >
             <span class="link-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="m18 8-6 3V5c0-1.1-.9-2-2-2h-3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h3c1.1 0 2-.9 2-2v-6l6 3Z"/><path d="M2 10h3v4H2z"/></svg>
@@ -200,7 +205,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="sidebar-link" 
             :class="{ active: currentTab === 'profile' }"
-            @click="currentTab = 'profile'"
+            @click="switchTab('profile')"
           >
             <span class="link-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -265,7 +270,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="nav-item" 
             :class="{ active: currentTab === 'home' }"
-            @click="currentTab = 'home'"
+            @click="switchTab('home')"
           >
             <span class="nav-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -276,7 +281,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="nav-item" 
             :class="{ active: currentTab === 'explore' }"
-            @click="currentTab = 'explore'"
+            @click="switchTab('explore')"
           >
             <span class="nav-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
@@ -287,7 +292,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="nav-item" 
             :class="{ active: currentTab === 'matches' }"
-            @click="currentTab = 'matches'"
+            @click="switchTab('matches')"
           >
             <span class="nav-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"/><path d="M12 2a6 6 0 0 1 6 6v3.5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8a6 6 0 0 1 6-6z"/></svg>
@@ -298,7 +303,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="nav-item" 
             :class="{ active: currentTab === 'activity' }"
-            @click="currentTab = 'activity'"
+            @click="switchTab('activity')"
           >
             <span class="nav-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="m18 8-6 3V5c0-1.1-.9-2-2-2h-3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h3c1.1 0 2-.9 2-2v-6l6 3Z"/><path d="M2 10h3v4H2z"/></svg>
@@ -309,7 +314,7 @@ const isWomenTheme = computed(() => {
           <button 
             class="nav-item" 
             :class="{ active: currentTab === 'profile' }"
-            @click="currentTab = 'profile'"
+            @click="switchTab('profile')"
           >
             <span class="nav-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

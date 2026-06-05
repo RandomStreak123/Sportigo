@@ -32,25 +32,55 @@ const womenOnly = ref(false)
 const formError = ref('')
 const isSubmitting = ref(false)
 
-// Autocomplete Location suggestions logic
-const locationSuggestions = [
-  'Sportego Arena, Sector 3',
-  'Kick Off Football Turf, Madhapur',
-  'Jubilee Hills Padel Court',
-  'Olimpia Sports Club, Gachibowli',
-  'The Smash Court Badminton, Kondapur',
-  'Municipal Cricket Ground, Hyderabad',
-  'East Hill Tennis Club',
-  'Downtown Padel Club'
-]
+// Autocomplete Location suggestions logic (Dynamically loaded from database matches + fallbacks)
+const locationSuggestions = computed(() => {
+  const fallbacks = [
+    'Sportigo Arena, Madhapur',
+    'Municipal Ground, Hyderabad',
+    'Sector 3 Sports Center',
+    'Jubilee Hills Turf Club',
+    'Olimpia Sports Complex',
+    'Gachibowli Stadium Court 1',
+    'Central Park Turf Field 2'
+  ]
+  
+  // Extract unique locations from existing matches in the store
+  const databaseLocations = store.state.matches
+    .map(match => match.location)
+    .filter(loc => typeof loc === 'string' && loc.trim().length > 0)
+  
+  const unique = new Set()
+  const result = []
+  
+  // Prioritize active database locations
+  for (const loc of databaseLocations) {
+    const key = loc.toLowerCase().trim()
+    if (!unique.has(key)) {
+      unique.add(key)
+      result.push(loc.trim())
+    }
+  }
+  
+  // Append fallback popular venues if not already present
+  for (const loc of fallbacks) {
+    const key = loc.toLowerCase().trim()
+    if (!unique.has(key)) {
+      unique.add(key)
+      result.push(loc)
+    }
+  }
+  
+  return result
+})
 
 const showSuggestions = ref(false)
 const filteredSuggestions = computed(() => {
+  const allSuggestions = locationSuggestions.value
   if (!location.value) {
-    return locationSuggestions
+    return allSuggestions
   }
   const query = location.value.toLowerCase().trim()
-  return locationSuggestions.filter(item => item.toLowerCase().includes(query))
+  return allSuggestions.filter(item => item.toLowerCase().includes(query))
 })
 
 const selectSuggestion = (suggestion) => {

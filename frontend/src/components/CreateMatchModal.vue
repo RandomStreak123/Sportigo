@@ -576,9 +576,22 @@ input:checked + .toggle-slider:before {
   list-style: none;
   padding: 8px 0;
   margin: 0;
-  max-height: 180px;
+  max-height: 280px;
   overflow-y: auto;
   text-align: left;
+}
+
+.suggestions-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+  background: var(--outline-variant);
+  border-radius: 10px;
 }
 
 .suggestion-item {

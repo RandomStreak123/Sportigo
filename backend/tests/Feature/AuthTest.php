@@ -1,0 +1,96 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
+
+class AuthTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_user_can_register()
+    {
+        $response = $this->postJson('/api/register', [
+            'username' => 'messi',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure([
+                     'access_token',
+                     'token_type',
+                     'user' => ['id', 'username']
+                 ]);
+
+        $this->assertDatabaseHas('users', [
+            'username' => 'messi',
+        ]);
+    }
+
+    public function test_user_cannot_register_with_short_password()
+    {
+        $response = $this->postJson('/api/register', [
+            'username' => 'messi',
+            'password' => '123',
+        ]);
+
+        $response->assertStatus(422)
+                 ->assertJsonValidationErrors(['password']);
+    }
+
+    public function test_user_can_login()
+    {
+        $user = User::factory()->create([
+            'username' => 'ronaldo',
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->postJson('/api/login', [
+            'username' => 'ronaldo',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure([
+                     'access_token',
+                     'token_type',
+                     'user'
+                 ]);
+    }
+
+    public function test_user_cannot_login_with_invalid_credentials()
+    {
+        $user = User::factory()->create([
+            'username' => 'ronaldo',
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->postJson('/api/login', [
+            'username' => 'ronaldo',
+            'password' => 'wrongpassword',
+        ]);
+
+        $response->assertStatus(401)
+                 ->assertJson([
+                     'message' => 'Invalid login details'
+                 ]);
+    }
+
+    public function test_user_can_logout()
+    {
+        $user = User::factory()->create();
+        $token = $user->createToken('test_token')->plainTextToken;
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/logout');
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'message' => 'Successfully logged out'
+                 ]);
+    }
+}

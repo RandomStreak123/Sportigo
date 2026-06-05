@@ -42,7 +42,7 @@ const filteredMatches = computed(() => {
   <div class="my-matches-container scrollable-y animate-fade-in">
     <!-- Header with Background Gradient -->
     <div class="matches-header">
-      <h2 class="title">My Matches</h2>
+      <h2 class="title">Matches</h2>
       
       <!-- Custom tabs bar -->
       <div class="sub-tabs-bar">

@@ -58,7 +58,7 @@ const handleComment = (e, act) => {
   <div class="activity-feed-container scrollable-y animate-fade-in">
     <!-- Header -->
     <div class="feed-header">
-      <h2 class="title">Sports Feed</h2>
+      <h2 class="title">Activity</h2>
     </div>
 
     <!-- Feed list -->

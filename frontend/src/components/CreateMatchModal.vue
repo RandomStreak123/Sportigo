@@ -37,11 +37,26 @@ const locationSuggestions = computed(() => {
   const fallbacks = [
     'Sportigo Arena, Madhapur',
     'Municipal Ground, Hyderabad',
-    'Sector 3 Sports Center',
-    'Jubilee Hills Turf Club',
-    'Olimpia Sports Complex',
-    'Gachibowli Stadium Court 1',
-    'Central Park Turf Field 2'
+    'HotFut Turf, Gachibowli',
+    'AstroPark Turf, Jubilee Hills',
+    'Plexus Turf, Madhapur',
+    'The Pitch Turf, Kondapur',
+    'Drive-In Arena, Hyderabad',
+    'Game On Turf, Gachibowli',
+    'Active Arena, Kadugodi',
+    'Base Hyderabad Turf, Madhapur',
+    'SkyZone Padel Arena, Hitec City',
+    'PowerPlay Turf, Banjara Hills',
+    'Matchday Turf, Madhapur',
+    'Striker Turf, Kondapur',
+    'SportyZone Badminton Court, Miyapur',
+    'Vijay Badminton Club, Kukatpally',
+    'Gachibowli Indoor Stadium, Court 1',
+    'Secunderabad Club Tennis Court',
+    'Yousufguda Indoor Stadium, Hyderabad',
+    'Lal Bahadur Stadium Cricket Ground',
+    'Central Park Tennis Court 2',
+    'Olimpia Sports Complex, Jubilee Hills'
   ]
   
   // Extract unique locations from existing matches in the store

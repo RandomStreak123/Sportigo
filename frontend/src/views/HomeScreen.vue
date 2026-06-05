@@ -590,34 +590,64 @@ const handleDragEnd = (e) => {
 .user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .user-avatar {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1.5px solid var(--primary);
-  box-shadow: var(--shadow-sm);
+  border: 2.5px solid var(--primary);
+  box-shadow: var(--shadow-md);
   cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .greeting-wrap {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .greeting-lbl {
-  font-size: 0.75rem;
+  font-size: 0.88rem;
   color: var(--on-surface-variant);
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }
 
 .user-name {
-  font-family: var(--font-sans);
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
   color: var(--on-surface);
+  line-height: 1.2;
+}
+
+@media (min-width: 769px) {
+  .user-info {
+    gap: 20px;
+  }
+  
+  .user-avatar {
+    width: 68px;
+    height: 68px;
+    border-width: 3px;
+  }
+  
+  .greeting-lbl {
+    font-size: 1.05rem;
+  }
+  
+  .user-name {
+    font-size: 1.95rem;
+  }
 }
 
 .icon-btn {

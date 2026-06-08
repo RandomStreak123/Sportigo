@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { getSportImage, getPlayerAvatar } from '../utils/sportImageHelper'
 import { store } from '../store'
 
@@ -16,9 +16,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'open-player', 'action-success'])
 
-const chatMessage = ref('')
 const isSubmitting = ref(false)
-const chatContainer = ref(null)
 
 const slotsLeft = computed(() => {
   return Math.max(0, props.match.maxSlots - props.match.joinedCount)
@@ -45,30 +43,7 @@ const imageSrc = computed(() => {
   return raw.split('/').map(s => encodeURIComponent(s)).join('/')
 })
 
-const chatHistory = computed(() => {
-  return store.state.chats[props.match.id] || []
-})
-
-const scrollToBottom = () => {
-  nextTick(() => {
-    if (chatContainer.value) {
-      chatContainer.value.scrollTop = chatContainer.value.scrollHeight
-    }
-  })
-}
-
-// Load chats and scroll to bottom when modal opens
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    store.loadChats(props.match.id)
-    scrollToBottom()
-  }
-}, { immediate: true })
-
-// Watch modal state to scroll chat down
-const handleOpenChat = () => {
-  scrollToBottom()
-}
+// Chat history and scroll-to-bottom handlers removed as chat is disabled
 
 const handleJoin = () => {
   if (isRestricted.value) return
@@ -77,7 +52,6 @@ const handleJoin = () => {
     store.joinMatch(props.match.id)
     isSubmitting.value = false
     emit('action-success', 'Successfully joined match! 🥳')
-    scrollToBottom()
   }, 500)
 }
 
@@ -90,12 +64,7 @@ const handleLeave = () => {
   }, 500)
 }
 
-const sendChat = () => {
-  if (!chatMessage.value.trim()) return
-  store.sendMessage(props.match.id, chatMessage.value.trim())
-  chatMessage.value = ''
-  scrollToBottom()
-}
+// sendChat removed
 
 const handleShare = () => {
   emit('action-success', 'Share link copied to clipboard! 📋')
@@ -121,7 +90,7 @@ const handleShare = () => {
       </div>
 
       <!-- Scrollable Details -->
-      <div class="details-content scrollable-y" @scroll="handleOpenChat">
+      <div class="details-content scrollable-y">
         <div class="header-section">
           <!-- Badges -->
           <div class="badge-row">
@@ -194,7 +163,7 @@ const handleShare = () => {
               </div>
             </div>
             
-            <div v-if="slotsLeft > 0" class="waiting-spot">
+            <div v-if="slotsLeft > 0 && !isCreator" class="waiting-spot">
               <span class="waiting-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="waiting-svg"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </span>
@@ -203,38 +172,7 @@ const handleShare = () => {
           </div>
         </div>
 
-        <!-- Match Chat section -->
-        <div v-if="isJoined" class="section-block chat-section">
-          <h3 class="section-title">Match Chat</h3>
-          <div ref="chatContainer" class="chat-container">
-            <div v-if="chatHistory.length === 0" class="chat-empty">
-              No messages yet. Say hello to start! 👋
-            </div>
-            <div 
-              v-for="(msg, i) in chatHistory" 
-              :key="i"
-              class="chat-bubble"
-              :class="{ mine: store.state.currentUser && msg.senderId === store.state.currentUser.id }"
-            >
-              <div class="chat-sender">{{ msg.senderName }}</div>
-              <div class="chat-text">{{ msg.text }}</div>
-              <div class="chat-time">{{ msg.time }}</div>
-            </div>
-          </div>
-          <!-- Send bar -->
-          <div class="chat-input-bar">
-            <input 
-              v-model="chatMessage" 
-              type="text" 
-              placeholder="Send message..." 
-              class="chat-input"
-              @keyup.enter="sendChat"
-            />
-            <button class="chat-send-btn" @click="sendChat">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </div>
-        </div>
+        <!-- Match Chat section removed -->
       </div>
 
       <!-- Action Footer -->

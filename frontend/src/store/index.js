@@ -205,8 +205,11 @@ const createMatch = async (sportType, title, dateTime, location, maxSlots, skill
   })
   if (data && data.id) {
     state.matches.unshift(data)
-    const acts = await safeFetch(`${API_URL}/activities`, { headers: getAuthHeaders() })
-    if (Array.isArray(acts)) state.activities = acts
+    safeFetch(`${API_URL}/activities`, { headers: getAuthHeaders() })
+      .then(acts => {
+        if (Array.isArray(acts)) state.activities = acts
+      })
+      .catch(e => console.warn("Failed to fetch activities asynchronously:", e));
     return data
   }
   return null
